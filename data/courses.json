@@ -1,0 +1,51 @@
+{
+  "courses": [
+    {
+      "id": "primeros-auxilios",
+      "title": "Primeros Auxilios",
+      "topics": [
+        {
+          "id": "evaluacion-primaria",
+          "title": "Evaluación primaria (ABCDE)",
+          "icon": "bi bi-activity",
+          "source": "data/topic-evaluacion-primaria.json"
+        },
+        {
+          "id": "hemorragias",
+          "title": "Control de hemorragias",
+          "icon": "bi bi-droplet",
+          "source": "data/topic-hemorragias.json"
+        }
+      ]
+    },    {
+      "id": "primeros-auxilios2",
+      "title": "Primeros Auxilios",
+      "topics": [
+        {
+          "id": "evaluacion-primaria",
+          "title": "Evaluación primaria (ABCDE)",
+          "icon": "bi bi-activity",
+          "source": "data/topic-evaluacion-primaria.json"
+        },
+        {
+          "id": "hemorragias",
+          "title": "Control de hemorragias",
+          "icon": "bi bi-droplet",
+          "source": "data/topic-hemorragias.json"
+        },
+        {
+          "id": "fracturas",
+          "title": "Fracturas y esguinces",
+          "icon": "bi bi-bandaid",
+          "source": "data/topic-fracturas.json"
+        },
+        {
+          "id": "quemaduras",
+          "title": "Quemaduras",
+          "icon": "bi bi-fire",
+          "source": "data/topic-quemaduras.json"
+        }
+      ]
+    }
+  ]
+}
