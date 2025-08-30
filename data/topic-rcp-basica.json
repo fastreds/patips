@@ -1,0 +1,136 @@
+{
+  "title": "RCP Básica y uso del DEA",
+  "description": "Técnicas de Reanimación Cardiopulmonar básica y uso del Desfibrilador Externo Automático",
+  "video": {
+    "src": "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
+    "markers": [
+      {
+        "time": 5,
+        "question": {
+          "text": "¿Cuál es la relación de compresiones y ventilaciones en RCP para adultos?",
+          "options": [
+            "15 compresiones : 2 ventilaciones",
+            "30 compresiones : 2 ventilaciones",
+            "30 compresiones : 1 ventilación",
+            "50 compresiones : 5 ventilaciones"
+          ],
+          "answer": 1
+        }
+      },
+      {
+        "time": 12,
+        "question": {
+          "text": "¿A qué profundidad deben realizarse las compresiones torácicas en adultos?",
+          "options": [
+            "1-2 cm",
+            "3-4 cm",
+            "5-6 cm",
+            "7-8 cm"
+          ],
+          "answer": 2
+        }
+      }
+    ]
+  },
+  "theory": {
+    "html": "<h4>Reanimación Cardiopulmonar (RCP) Básica</h4><p>La RCP es una técnica de emergencia que combina <span data-def='Compresiones torácicas: Presiones rítmicas sobre el esternón para hacer circular la sangre manualmente.'>compresiones torácicas</span> con <span data-def='Ventilaciones de rescate: Insuflaciones de aire en los pulmones de la víctima.'>ventilaciones de rescate</span> para mantener el flujo de sangre oxigenada al cerebro y otros órganos vitales cuando el corazón ha dejado de latir.</p><h5>Pasos para realizar RCP en adultos:</h5><ol><li>Verificar seguridad de la escena y respuesta de la víctima</li><li>Pedir ayuda y solicitar DEA</li><li>Abrir la vía aérea con inclinación de cabeza-elevación de mentón</li><li>Verificar respiración (no más de 10 segundos)</li><li>Iniciar compresiones torácicas: 100-120 por minuto, 5-6 cm de profundidad</li><li>Realizar 30 compresiones y 2 ventilaciones</li><li>Continuar hasta que llegue ayuda o la víctima responda</li></ol><h4>Uso del Desfibrilador Externo Automático (DEA)</h4><p>El DEA es un dispositivo que analiza el ritmo cardíaco y puede administrar una descarga eléctrica para restaurar un ritmo efectivo. Pasos para su uso:</p><ol><li>Encender el DEA</li><li>Colocar los parches según las instrucciones (uno lado superior derecho del pecho, otro lado inferior izquierdo)</li><li>Conectar los parches al DEA</li><li>Alejarse de la víctima mientras analiza</li><li>Administrar descarga si está indicado</li><li>Reanudar RCP inmediatamente después de la descarga</li></ol>"
+  },
+  "images": {
+    "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/CPR_performed_on_medical_dummy.jpg/640px-CPR_performed_on_medical_dummy.jpg",
+    "alt": "Técnica correcta de RCP",
+    "areas": [
+      {
+        "shape": "circle",
+        "coords": "320,180,50",
+        "title": "Posición de manos",
+        "description": "Palma de una mano sobre el dorso de la otra, con los dedos entrelazados. Centrar sobre el esternón, entre los pezones."
+      },
+      {
+        "shape": "rect",
+        "coords": "250,250,400,300",
+        "title": "Posición del cuerpo",
+        "description": "Hombros directamente sobre las manos, brazos rectos. Utilizar el peso del cuerpo para las compresiones."
+      },
+      {
+        "shape": "poly",
+        "coords": "500,150,580,150,580,230,500,230",
+        "title": "DEA",
+        "description": "Desfibrilador Externo Automático. Elemento crucial para sobrevida en paro cardíaco."
+      }
+    ]
+  },
+  "qa": [
+    {
+      "text": "Seleccione las situaciones donde debe iniciarse RCP inmediatamente:",
+      "type": "multi",
+      "options": [
+        "Persona inconsciente que no responde y no respira normalmente",
+        "Persona con dolor torácico",
+        "Persona que se está convulsionando",
+        "Persona inconsciente con respiración agónica o boqueos",
+        "Persona con dificultad respiratoria pero consciente"
+      ],
+      "answer": [0, 3]
+    },
+    {
+      "text": "¿Cuándo debe detenerse la RCP?",
+      "type": "single",
+      "options": [
+        "Después de 2 minutos de esfuerzo",
+        "Cuando llega ayuda médica capacitada y se hace cargo",
+        "Cuando el reanimador está cansado",
+        "Después de 5 ciclos de RCP"
+      ],
+      "answer": 1
+    }
+  ],
+  "resources": [
+    {
+      "type": "pdf",
+      "title": "Guía RCP 2023 - American Heart Association",
+      "url": "https://cpr.heart.org/en/resuscitation-science/cpr-and-ecc-guidelines"
+    },
+    {
+      "type": "enlace",
+      "title": "Video demostrativo: RCP en adultos",
+      "url": "https://www.youtube.com/watch?v=2aJKi5s0XrQ"
+    }
+  ],
+  "content": [
+    {
+      "type": "theory",
+      "html": "<h4>Reanimación Cardiopulmonar (RCP) Básica</h4><p>La RCP es una técnica de emergencia que combina compresiones torácicas con ventilaciones de rescate.</p>"
+    },
+    {
+      "type": "video",
+      "src": "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
+      "markers": [
+        {
+          "time": 5,
+          "question": {
+            "text": "¿Cuál es la relación de compresiones y ventilaciones en RCP para adultos?",
+            "options": [
+              "15 compresiones : 2 ventilaciones",
+              "30 compresiones : 2 ventilaciones",
+              "30 compresiones : 1 ventilación",
+              "50 compresiones : 5 ventilaciones"
+            ],
+            "answer": 1
+          }
+        }
+      ]
+    },
+    {
+      "type": "image",
+      "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/CPR_performed_on_medical_dummy.jpg/640px-CPR_performed_on_medical_dummy.jpg",
+      "areas": [
+        {
+          "shape": "circle",
+          "coords": "320,180,50",
+          "title": "Posición de manos",
+          "description": "Palma de una mano sobre el dorso de la otra, con los dedos entrelazados."
+        }
+      ]
+    }
+  ]
+}

@@ -1,424 +1,109 @@
-// SPA Cursos OBS - UCR
-// Vanilla JS (except maphilight uses jQuery per plugin requirements)
+// SPA Cursos OBS - UCR - v2 (simplified)
+const state = { courses: [], current: { courseId:null, topicId:null, topicData:null, courseIndex:0, topicIndex:0 } };
 
-const state = {
-  courses: [],
-  current: { courseId: null, topicId: null, topicData: null },
-  askedMarkers: new Set(),
-  markerPending: null,
-};
+const $ = (s,r=document)=> r.querySelector(s);
+const $$ = (s,r=document)=> Array.from(r.querySelectorAll(s));
+const LS = "ucr_courses_progress_v2";
 
-// Helpers
-const $ = (sel, root = document) => root.querySelector(sel);
-const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+function getProgress(){ try{ return JSON.parse(localStorage.getItem(LS))||{} }catch{ return {} } }
+function saveProgress(p){ localStorage.setItem(LS, JSON.stringify(p)); }
+function topicKey(c,t){ return `${c}::${t}`; }
+function updateGlobalProgress(){ const p=getProgress(); const vals=Object.values(p); const avg= vals.length? Math.round(vals.reduce((a,b)=>a+b,0)/vals.length):0; $("#globalProgress").textContent=`Avance global: ${avg}%`; }
 
-// LocalStorage keys
-const LS_PROGRESS_KEY = "ucr_courses_progress_v1";
+$("#sidebarToggle").addEventListener("click", ()=> bootstrap.Collapse.getOrCreateInstance($("#sidebar")).toggle());
+$("#creditsBtn").addEventListener("click", ()=> bootstrap.Modal.getOrCreateInstance($("#creditsModal")).show());
+$("#resetProgressBtn").addEventListener("click", ()=>{ localStorage.removeItem(LS); Object.keys(localStorage).forEach(k=>{ if(k.includes("::doneSet")||k.includes("::videoAnswers")||k.includes("::preguntas")) localStorage.removeItem(k); }); updateGlobalProgress(); renderCourseTree(); });
 
-function getProgress(){
-  try { return JSON.parse(localStorage.getItem(LS_PROGRESS_KEY)) || {}; }
-  catch { return {}; }
-}
-function saveProgress(progress){
-  localStorage.setItem(LS_PROGRESS_KEY, JSON.stringify(progress));
-}
-
-function topicKey(courseId, topicId){ return `${courseId}::${topicId}`; }
-
-function setTopicProgress(courseId, topicId, value){
-  const progress = getProgress();
-  progress[topicKey(courseId, topicId)] = value;
-  saveProgress(progress);
-  updateGlobalProgress();
-}
-function getTopicProgress(courseId, topicId){
-  const progress = getProgress();
-  return progress[topicKey(courseId, topicId)] || 0;
-}
-
-function updateGlobalProgress(){
-  // average of all topic progresses
-  const progress = getProgress();
-  const values = Object.values(progress);
-  const avg = values.length ? Math.round(values.reduce((a,b)=>a+b,0)/values.length) : 0;
-  $("#globalProgress").textContent = `Avance global: ${avg}%`;
-}
-
-// Sidebar toggle
-$("#sidebarToggle").addEventListener("click", () => {
-  const el = $("#sidebar");
-  const bsCollapse = bootstrap.Collapse.getOrCreateInstance(el);
-  bsCollapse.toggle();
-});
-
-// Reset progress
-$("#resetProgressBtn").addEventListener("click", ()=>{
-  localStorage.removeItem(LS_PROGRESS_KEY);
-  updateGlobalProgress();
-  // reset all progress bars
-  $$(".topic-item .progress-bar").forEach(pb => { pb.style.width = "0%"; pb.textContent = "0%"; });
-});
-
-// Load courses tree
-async function loadCourses(){
-  const res = await fetch("data/courses.json");
-  const json = await res.json();
-  state.courses = json.courses;
-  renderCourseTree();
-  updateGlobalProgress();
-}
+async function loadCourses(){ const res=await fetch("data/courses.json"); const json=await res.json(); state.courses=json.courses; renderCourseTree(); updateGlobalProgress(); }
 
 function renderCourseTree(){
-  const container = $("#courseTree");
-  container.innerHTML = "";
-  state.courses.forEach(course => {
-    const header = document.createElement("div");
-    header.className = "mt-2 mb-1 text-uppercase text-muted small";
-    header.textContent = course.title;
-
-    container.appendChild(header);
-
-    course.topics.forEach(topic => {
-      const item = document.createElement("button");
-      item.className = "list-group-item list-group-item-action d-flex align-items-center justify-content-between topic-item";
-      item.innerHTML = `
-        <span class="text-start">${topic.icon ? `<i class="${topic.icon} me-2"></i>` : ""}${topic.title}</span>
-        <div class="ms-2 flex-grow-1">
-          <div class="progress ms-2 me-1">
-            <div class="progress-bar ucr-progress" role="progressbar" style="width: ${getTopicProgress(course.id, topic.id)}%"></div>
-          </div>
-        </div>
-      `;
-      item.addEventListener("click", ()=>loadTopic(course.id, topic.id, topic.source));
+  const container = $("#courseTree"); container.innerHTML="";
+  state.courses.forEach((course,ci)=>{
+    const header=document.createElement("div"); header.className="mt-2 mb-1 text-uppercase text-muted small"; header.textContent=course.title; container.appendChild(header);
+    course.topics.forEach((topic,ti)=>{
+      const item=document.createElement("button"); item.className="list-group-item list-group-item-action d-flex align-items-center justify-content-between topic-item";
+      item.innerHTML = `<span class="text-start">${topic.icon?`<i class="${topic.icon} me-2"></i>`:""}${topic.title}</span>
+        <div class="ms-2 flex-grow-1"><div class="progress ms-2 me-1"><div class="progress-bar ucr-progress" style="width:${getTopicProgress(course.id, topic.id)}%"></div></div></div>`;
+      item.addEventListener("click", ()=>{ loadTopic(course.id, topic.id, topic.source, ci, ti); if(window.innerWidth<992) bootstrap.Collapse.getOrCreateInstance($("#sidebar")).hide(); });
       container.appendChild(item);
     });
   });
 }
 
-async function loadTopic(courseId, topicId, source){
-  const res = await fetch(source);
-  const data = await res.json();
-  state.current = { courseId, topicId, topicData: data };
-  state.askedMarkers = new Set();
-  $("#topicTitle").textContent = data.title;
+function getTopicProgress(c,t){ const p=getProgress(); return p[topicKey(c,t)]||0; }
+function setTopicProgress(c,t,v){ const p=getProgress(); p[topicKey(c,t)]=v; saveProgress(p); updateGlobalProgress(); renderCourseTree(); }
 
-  // Video
-  const video = $("#videoPlayer");
-  $("#videoSource").src = data.video?.src || "";
-  video.load();
-  $("#videoMarkers").innerHTML = renderMarkers(data.video?.markers || []);
-
-  // Theory
-  $("#theoryContent").innerHTML = data.theory?.html || "<p>No hay contenido teórico.</p>";
-  initDefinitionTooltips();
-
-  // Images + map
-  renderInteractiveImage(data.images || null);
-
-  // QA
-  renderQA(data.qa || []);
-
-  // Resources
-  renderResources(data.resources || []);
-
-  // Progress bar
+async function loadTopic(courseId, topicId, source, courseIndex=0, topicIndex=0){
+  const res=await fetch(source); const data=await res.json();
+  if(!data.content){
+    const content=[]; if(data.theory&&data.theory.html) content.push({type:"theory", html:data.theory.html}); if(data.video) content.push({type:"video", src:data.video.src, markers:data.video.markers||[]}); if(data.images) content.push({type:"image", src:data.images.src, areas:data.images.areas||[]}); data.content=content;
+  }
+  state.current={courseId,topicId,topicData:data,courseIndex,topicIndex};
+  $("#topicTitle").textContent=data.title;
+  renderTemaContent(data.content||[]);
+  renderPreguntas(data);
+  renderResources(data.resources||[]);
   updateTopicProgressBar();
-
-  // Video markers behavior
-  setupMarkerQuestions(video, data.video?.markers || []);
+  setupContentVideoMarkers();
 }
 
-function renderMarkers(markers){
-  if(!markers.length) return "<div class='text-muted small'>Sin marcadores.</div>";
-  return `<div class="d-flex flex-wrap gap-2">` + markers.map(m => {
-    const mm = Math.floor(m.time/60).toString().padStart(2,"0");
-    const ss = Math.floor(m.time%60).toString().padStart(2,"0");
-    return `<span class="badge text-bg-warning">${mm}:${ss}</span>`;
-  }).join("") + `</div>`;
-}
-
-/** Popper.js tooltips for definitions **/
-function initDefinitionTooltips(){
-  // Clear any existing
-  $$(".tooltip-popper").forEach(el => el.remove());
-
-  const terms = $$("[data-def]");
-  terms.forEach(term => {
-    term.classList.add("text-decoration-dotted", "border-bottom", "border-secondary-subtle");
-    let tooltipEl;
-    let popperInstance;
-
-    function show(){
-      tooltipEl = document.createElement("div");
-      tooltipEl.className = "tooltip-popper";
-      tooltipEl.textContent = term.getAttribute("data-def");
-      const arrow = document.createElement("div");
-      arrow.className = "arrow";
-      tooltipEl.appendChild(arrow);
-      document.body.appendChild(tooltipEl);
-
-      popperInstance = Popper.createPopper(term, tooltipEl, {
-        placement: 'top',
-        modifiers: [
-          { name: 'offset', options: { offset: [0,8] } },
-          { name: 'arrow', options: { element: arrow } }
-        ]
-      });
-      tooltipEl.setAttribute("data-show","");
-    }
-    function hide(){
-      tooltipEl?.removeAttribute("data-show");
-      popperInstance?.destroy();
-      tooltipEl?.remove();
-    }
-    term.addEventListener("mouseenter", show);
-    term.addEventListener("mouseleave", hide);
-    term.addEventListener("focus", show);
-    term.addEventListener("blur", hide);
-    term.addEventListener("touchstart", (e)=>{ e.preventDefault(); show(); setTimeout(hide, 1500); }, {passive:false});
+function renderTemaContent(content){
+  const container=$("#temaContent"); container.innerHTML="";
+  content.forEach((el,idx)=>{
+    const w=document.createElement("div"); w.className="tema-element"; w.dataset.index=idx;
+    if(el.type==="theory"){ w.innerHTML=`<h5>Teoría</h5><div class="lh-lg">${el.html}</div>`; }
+    else if(el.type==="video"){ w.innerHTML=`<h5>Video</h5><div class="tema-video"><video class="w-100" controls preload="metadata" data-video-index="${idx}"><source src="${el.src}"></video></div>`; if(el.markers) w.querySelector("video").dataset.markers = JSON.stringify(el.markers); }
+    else if(el.type==="image"){ w.innerHTML=`<h5>Imagen</h5><div class="text-center"><img src="${el.src}" class="img-fluid rounded ucr-shadow" usemap="#map${idx}"><map name="map${idx}"></map></div>`; setTimeout(()=>{ const map=w.querySelector("map"); (el.areas||[]).forEach(a=>{ const area=document.createElement("area"); area.shape=a.shape||"rect"; area.coords=a.coords; area.href="javascript:void(0)"; area.title=a.title; area.dataset.desc=a.description||""; area.dataset.maphilight=JSON.stringify({strokeColor:'00A3E0',fillColor:'00A3E0',fillOpacity:0.2}); area.addEventListener("click", ()=>{ showToast(`${a.title}: ${a.description||""}`); markStepDone(`image-${a.title}`); }); map.appendChild(area); }); try{ jQuery(w).find("img").maphilight(); }catch(e){} },50); }
+    container.appendChild(w);
   });
+  initDefinitionTooltips();
+  $("#nextTopicBtn").onclick = ()=>{ const c = state.courses[state.current.courseIndex]; const next = c.topics[state.current.topicIndex+1]; if(next) loadTopic(c.id, next.id, next.source, state.current.courseIndex, state.current.topicIndex+1); else showToast("Último tema."); };
 }
 
-/** Interactive image with maphilight **/
-function renderInteractiveImage(images){
-  const container = $("#imageContainer");
-  container.innerHTML = "";
-  if(!images || !images.src){
-    container.innerHTML = "<div class='text-muted'>No hay imágenes para este tema.</div>";
-    return;
-  }
-  const imgId = "topicImage";
-  const mapId = "topicMap";
+function initDefinitionTooltips(){ $$("[data-def]").forEach(term=>{ term.classList.add("text-decoration-dotted","border-bottom","border-secondary-subtle"); let tooltip, inst; function show(){ tooltip=document.createElement("div"); tooltip.className="tooltip-popper"; tooltip.textContent=term.getAttribute("data-def"); const arrow=document.createElement("div"); arrow.className="arrow"; tooltip.appendChild(arrow); document.body.appendChild(tooltip); inst = Popper.createPopper(term, tooltip, {placement:'top', modifiers:[{name:'offset',options:{offset:[0,8]}},{name:'arrow',options:{element:arrow}}]}); tooltip.setAttribute("data-show",""); } function hide(){ tooltip?.remove(); inst?.destroy(); } term.addEventListener("mouseenter", show); term.addEventListener("mouseleave", hide); term.addEventListener("touchstart",(e)=>{ e.preventDefault(); show(); setTimeout(hide,1500); }, {passive:false}); }); }
 
-  const img = document.createElement("img");
-  img.src = images.src;
-  img.alt = images.alt || "Imagen del tema";
-  img.useMap = `#${mapId}`;
-  img.id = imgId;
-  img.className = "img-fluid rounded ucr-shadow";
+function renderPreguntas(data){
+  const form=$("#preguntasForm"); form.innerHTML=""; const preguntas=data.qa||[];
+  preguntas.forEach((q,idx)=>{ const card=document.createElement("div"); card.className="card border-0 shadow-sm"; const body=document.createElement("div"); body.className="card-body"; body.innerHTML=`<p class="mb-2 fw-semibold">${idx+1}. ${q.text}</p>`; const opts=document.createElement("div"); if(q.type==="multi"){ q.options.forEach((op,i)=> opts.insertAdjacentHTML('beforeend',`<div class="form-check"><input class="form-check-input" type="checkbox" id="q${idx}op${i}" data-q="${idx}" value="${i}"><label class="form-check-label" for="q${idx}op${i}">${op}</label></div>`)); } else { q.options.forEach((op,i)=> opts.insertAdjacentHTML('beforeend',`<div class="form-check"><input class="form-check-input" type="radio" name="q${idx}" id="q${idx}op${i}" data-q="${idx}" value="${i}"><label class="form-check-label" for="q${idx}op${i}">${op}</label></div>`)); } body.appendChild(opts); const fb=document.createElement("div"); fb.className="mt-2 small"; fb.id=`fb-${idx}`; body.appendChild(fb); card.appendChild(body); form.appendChild(card); });
+  loadSavedPreguntas();
+  $("#savePreguntasBtn").onclick = (e)=>{ e.preventDefault(); savePreguntas(); };
+  $("#showSummaryBtn").onclick = (e)=>{ e.preventDefault(); showResumen(); };
+}
 
-  const map = document.createElement("map");
-  map.name = mapId;
-
-  (images.areas || []).forEach(a => {
-    const area = document.createElement("area");
-    area.shape = a.shape || "rect";
-    area.coords = a.coords;
-    area.title = a.title;
-    area.href = "javascript:void(0)";
-    area.dataset.maphilight = JSON.stringify({ strokeColor:'00A3E0', fillColor:'00A3E0', fillOpacity:0.2 });
-    area.addEventListener("click", ()=>{
-      bootstrap.Toast.getOrCreateInstance(showToast(`${a.title}: ${a.description || ""}`)).show();
-      markStepDone("image-"+a.title);
-    });
-    map.appendChild(area);
+function savePreguntas(){
+  const data=state.current.topicData; if(!data) return; const preguntas=data.qa||[]; const answers={};
+  preguntas.forEach((q,idx)=>{ if(q.type==="multi"){ const checks=Array.from(document.querySelectorAll(`#q${idx}op`)); } if(q.type==="multi"){ const checks = Array.from(document.querySelectorAll(`#q${idx}op0, #q${idx}op1, #q${idx}op2, #q${idx}op3`)).filter(Boolean); } if(q.type==="multi"){ /* generic handling below */ }
+    if(q.type==="multi"){ const inputs = Array.from(document.querySelectorAll(`[id^="q${idx}op"]`)); answers[idx] = inputs.filter(i=>i.checked).map(i=>parseInt(i.value)); } else { const sel = document.querySelector(`[name="q${idx}"]:checked`); answers[idx] = sel? parseInt(sel.value) : null; }
+    const fb = $(`#fb-${idx}`); const correct = q.answer; const ok = Array.isArray(correct)? arraysEqualUnordered(answers[idx]||[], correct) : (answers[idx]===correct); fb.innerHTML = ok? `<span class="text-success">✔️ Correcto</span>` : `<span class="text-danger">✖️ ${q.explanation||'Incorrecto'}</span>`;
   });
-
-  container.appendChild(img);
-  container.appendChild(map);
-
-  // initialize plugin after image is in DOM
-  setTimeout(()=>{
-    try { jQuery(img).maphilight(); } catch(e){ console.warn("maphilight no disponible", e); }
-  }, 50);
+  localStorage.setItem(`${topicKey(state.current.courseId,state.current.topicId)}::preguntas`, JSON.stringify(answers));
+  const total=preguntas.length; const correctCount=preguntas.filter((q,idx)=>{ const a=answers[idx]; const corr=q.answer; return Array.isArray(corr)? arraysEqualUnordered(a||[],corr): (a===corr); }).length;
+  const percent = total? Math.round(100*correctCount/total):0;
+  $("#preguntasResult").innerHTML = `<span class="badge text-bg-${percent===100?'success':percent>=60?'warning':'danger'}">${percent}%</span>`;
+  if(percent===100) markStepDone("qa");
+  updateTopicProgressBar();
 }
 
-/** Toast helper **/
-function showToast(message){
-  let toast = document.getElementById("dynamicToast");
-  if(!toast){
-    const toastWrap = document.createElement("div");
-    toastWrap.className = "toast-container position-fixed bottom-0 end-0 p-3";
-    toastWrap.innerHTML = `
-      <div id="dynamicToast" class="toast align-items-center text-bg-dark border-0" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="d-flex">
-          <div class="toast-body"></div>
-          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-        </div>
-      </div>`;
-    document.body.appendChild(toastWrap);
-    toast = document.getElementById("dynamicToast");
-  }
-  toast.querySelector(".toast-body").textContent = message;
-  return toast;
-}
+function loadSavedPreguntas(){ const raw=localStorage.getItem(`${topicKey(state.current.courseId,state.current.topicId)}::preguntas`); if(!raw) return; const answers=JSON.parse(raw); Object.keys(answers).forEach(k=>{ const val=answers[k]; if(Array.isArray(val)){ val.forEach(v=>{ const el=document.getElementById(`q${k}op${v}`); if(el) el.checked=true; }); } else { const el=document.getElementById(`q${k}op${val}`); if(el) el.checked=true; } }); }
 
-/** QA **/
-function renderQA(qa){
-  const form = $("#qaForm");
-  form.innerHTML = "";
-  qa.forEach((q, idx)=>{
-    const block = document.createElement("div");
-    block.className = "card border-0 shadow-sm";
-    block.innerHTML = `
-      <div class="card-body">
-        <p class="mb-2 fw-semibold">${idx+1}. ${q.text}</p>
-        ${q.type === "multi" ? q.options.map((op, i)=>`
-          <div class="form-check">
-            <input class="form-check-input" type="checkbox" name="q${idx}" id="q${idx}op${i}" value="${i}">
-            <label class="form-check-label" for="q${idx}op${i}">${op}</label>
-          </div>
-        `).join("") :
-        q.options.map((op, i)=>`
-          <div class="form-check">
-            <input class="form-check-input" type="radio" name="q${idx}" id="q${idx}op${i}" value="${i}">
-            <label class="form-check-label" for="q${idx}op${i}">${op}</label>
-          </div>
-        `).join("")
-        }
-      </div>`;
-    form.appendChild(block);
-  });
+function showResumen(){ const data=state.current.topicData; const preguntas=data.qa||[]; const saved=JSON.parse(localStorage.getItem(`${topicKey(state.current.courseId,state.current.topicId)}::preguntas`)||"{}"); const videoAnswers=JSON.parse(localStorage.getItem(`${topicKey(state.current.courseId,state.current.topicId)}::videoAnswers`)||"{}"); let html=`<h5>Resumen - ${data.title}</h5>`; html+=`<h6>Preguntas</h6>`; preguntas.forEach((q,idx)=>{ html+=`<div class="mb-2"><strong>${idx+1}. ${q.text}</strong><br>`; const s = saved[idx]; if(s==null) html+=`<em>No respondida</em>`; else { const ans = Array.isArray(s)? s : [s]; html+=`Respuesta: ${ans.map(a=>q.options[a]).join(", ")}<br>`; const corr = Array.isArray(q.answer)? q.answer : [q.answer]; const ok = arraysEqualUnordered(ans,corr); html+= ok? `<span class="text-success">Correcto</span>`:`<span class="text-danger">Incorrecto</span>`; } html+=`</div>`; }); html+=`<h6>Respuestas en videos</h6>`; if(Object.keys(videoAnswers).length===0) html+=`<em>No hubo respuestas en videos.</em>`; else { Object.keys(videoAnswers).forEach(k=>{ const v=videoAnswers[k]; html+=`<div class="mb-2"><strong>Video marcador ${k}</strong>: ${v.answerLabel||v.answer}</div>`; }); } $("#videoSummaryContainer").innerHTML = html; }
 
-  $("#validateQA").onclick = (e)=>{
-    e.preventDefault();
-    const topic = state.current.topicData;
-    const answers = topic.qa || [];
-    let correct = 0;
-    answers.forEach((q, idx)=>{
-      const inputs = $$(`[name="q${idx}"]`);
-      let values = [];
-      inputs.forEach(inp => { if(inp.checked) values.push(parseInt(inp.value)); });
-      const right = q.answer;
-      const ok = Array.isArray(right) ? arraysEqualUnordered(values, right) : (values[0] === right);
-      if(ok) correct++;
-    });
-    const percent = answers.length ? Math.round((correct/answers.length)*100) : 0;
-    $("#qaResult").innerHTML = `<span class="badge text-bg-${percent===100?'success':percent>=60?'warning':'danger'}">${percent}% correcto</span>`;
-    if(percent===100) markStepDone("qa");
-  };
-}
+function updateTopicProgressBar(){ const data=state.current.topicData; if(!data) return; const steps=[]; (data.content||[]).forEach((c,ci)=>{ if(c.type==="video"&&c.markers) c.markers.forEach((m,mi)=> steps.push(`marker-${ci}-${mi}`)); if(c.type==="image"&&c.areas) c.areas.forEach(a=> steps.push(`image-${a.title}`)); if(c.type==="theory") steps.push("theory"); if(data.qa&&data.qa.length) steps.push("qa"); }); const done=getDoneSet(); const doneCount = steps.filter(s=>done.has(s)).length; const percent = steps.length? Math.round(100*doneCount/steps.length):0; const pb=$("#topicProgressBar"); pb.style.width = percent+"%"; pb.textContent = percent+"%"; setTopicProgress(state.current.courseId, state.current.topicId, percent); checkCourseCompletion(); renderCourseTree(); }
 
-function arraysEqualUnordered(a,b){
-  if(!Array.isArray(a) || !Array.isArray(b)) return false;
-  if(a.length!==b.length) return false;
-  const sa = [...a].sort(); const sb = [...b].sort();
-  return sa.every((v,i)=>v===sb[i]);
-}
+function getDoneSet(){ const k=`${topicKey(state.current.courseId,state.current.topicId)}::doneSet`; const raw=localStorage.getItem(k); return new Set(raw?JSON.parse(raw):[]); }
+function saveDoneSet(s){ const k=`${topicKey(state.current.courseId,state.current.topicId)}::doneSet`; localStorage.setItem(k, JSON.stringify([...s])); }
+function markStepDone(step){ const s=getDoneSet(); if(!s.has(step)){ s.add(step); saveDoneSet(s); updateTopicProgressBar(); } }
 
-/** Resources **/
-function renderResources(resources){
-  const list = $("#resourcesList");
-  list.innerHTML = "";
-  resources.forEach(r => {
-    const li = document.createElement("li");
-    li.className = "list-group-item d-flex align-items-center justify-content-between";
-    li.innerHTML = `
-      <span>${r.type?.toUpperCase() || "ENLACE"}: ${r.title}</span>
-      <a class="btn btn-sm btn-outline-primary" href="${r.url}" target="_blank" rel="noopener">Abrir</a>
-    `;
-    list.appendChild(li);
-  });
-}
+function setupContentVideoMarkers(){ const videos=$$("video[data-video-index]"); videos.forEach(videoEl=>{ const newVideo = videoEl.cloneNode(true); videoEl.parentNode.replaceChild(newVideo, videoEl); const idx = parseInt(newVideo.dataset.videoIndex); const markers = newVideo.dataset.markers ? JSON.parse(newVideo.dataset.markers) : []; const asked = new Set(); const modalEl = $("#markerModal"); const modal = bootstrap.Modal.getOrCreateInstance(modalEl); const questionEl = $("#markerQuestion"); const optionsEl = $("#markerOptions"); const feedbackEl = $("#markerFeedback"); const submitBtn = $("#markerSubmit");
+    newVideo.ontimeupdate = ()=>{ const t=newVideo.currentTime; const next = markers.find((m,mi)=> t>=m.time && !asked.has(mi)); if(next){ const mi = markers.indexOf(next); asked.add(mi); newVideo.pause(); feedbackEl.innerHTML=""; questionEl.textContent = next.question.text; optionsEl.innerHTML = next.question.options.map((op,i)=>`<div class="form-check"><input class="form-check-input" type="radio" name="markerAnswer" id="markerAnswer${idx}_${i}" value="${i}"><label class="form-check-label" for="markerAnswer${idx}_${i}">${op}</label></div>`).join(""); modal.show(); submitBtn.onclick = ()=>{ const sel = document.querySelector(`input[name="markerAnswer"]:checked`); if(!sel){ feedbackEl.innerHTML = `<span class="text-danger">Selecciona una opción.</span>`; return; } const val = parseInt(sel.value); if(val === next.question.answer){ feedbackEl.innerHTML = `<span class="text-success">¡Correcto!</span>`; modal.hide(); newVideo.play(); const vKey = `${topicKey(state.current.courseId,state.current.topicId)}::videoAnswers`; const raw = JSON.parse(localStorage.getItem(vKey)||"{}"); raw[`${idx}-${mi}`] = { answer: val, answerLabel: next.question.options[val], time: next.time }; localStorage.setItem(vKey, JSON.stringify(raw)); markStepDone(`marker-${idx}-${mi}`); } else { feedbackEl.innerHTML = `<span class="text-danger">Incorrecto. Intenta nuevamente.</span>`; } }; } }; newVideo.onended = ()=> markStepDone(`video-ended-${idx}`); }); }
 
-/** Topic progress calculation **/
-function updateTopicProgressBar(){
-  const data = state.current.topicData;
-  if(!data){ return; }
-  const steps = [
-    ...(data.video?.markers || []).map((m,i)=>`marker-${i}`),
-    ...(data.images?.areas || []).map(a=>`image-${a.title}`),
-    ...(data.qa?.length ? ["qa"] : []),
-    ...(data.theory?.html ? ["theory"] : []),
-  ];
-  const doneSet = getDoneSet();
-  const doneCount = steps.filter(s=>doneSet.has(s)).length;
-  const percent = steps.length ? Math.round(100*doneCount/steps.length) : 0;
+function arraysEqualUnordered(a,b){ if(!Array.isArray(a)||!Array.isArray(b)) return false; if(a.length!==b.length) return false; const sa=[...a].sort(), sb=[...b].sort(); return sa.every((v,i)=>v===sb[i]); }
 
-  const pb = $("#topicProgressBar");
-  pb.style.width = percent + "%";
-  pb.textContent = percent + "%";
+function showToast(msg){ let t=document.getElementById("dynamicToast"); if(!t){ const wrap=document.createElement("div"); wrap.className="toast-container position-fixed bottom-0 end-0 p-3"; wrap.innerHTML=`<div id="dynamicToast" class="toast align-items-center text-bg-dark border-0"><div class="d-flex"><div class="toast-body"></div><button class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button></div></div>`; document.body.appendChild(wrap); t=document.getElementById("dynamicToast"); } t.querySelector(".toast-body").textContent=msg; return bootstrap.Toast.getOrCreateInstance(t); }
 
-  setTopicProgress(state.current.courseId, state.current.topicId, percent);
-  // also update sidebar bar
-  const items = $$("#courseTree .topic-item .progress-bar");
-  items.forEach((bar)=>{
-    // This relies on order but acceptable for demo; could enhance with data attributes.
-    // We'll simply refresh tree to reflect values accurately.
-  });
-  // refresh tree to reflect widths
-  renderCourseTree();
-}
+function renderResources(resources){ const list=$("#resourcesList"); list.innerHTML=""; (resources||[]).forEach(r=>{ const li=document.createElement("li"); li.className="list-group-item d-flex align-items-center justify-content-between"; li.innerHTML=`<span>${r.type?.toUpperCase()||"ENLACE"}: ${r.title}</span><a class="btn btn-sm btn-outline-primary" href="${r.url}" target="_blank" rel="noopener">Abrir</a>`; list.appendChild(li); }); }
 
-function getDoneSet(){
-  const key = topicKey(state.current.courseId, state.current.topicId);
-  const k = `${key}::doneSet`;
-  const raw = localStorage.getItem(k);
-  const set = new Set(raw ? JSON.parse(raw) : []);
-  return set;
-}
-function saveDoneSet(set){
-  const key = topicKey(state.current.courseId, state.current.topicId);
-  const k = `${key}::doneSet`;
-  localStorage.setItem(k, JSON.stringify([...set]));
-}
+function checkCourseCompletion(){ const c = state.courses[state.current.courseIndex]; if(!c) return; const all = c.topics.map(t=> getTopicProgress(c.id,t.id)===100).every(v=>v===true); if(all && !$("#certButton")){ const btn = document.createElement("button"); btn.id="certButton"; btn.className="btn btn-outline-light btn-sm"; btn.textContent="Generar certificado"; btn.onclick = ()=> bootstrap.Modal.getOrCreateInstance($("#certModal")).show(); document.querySelector(".navbar .container-fluid .ms-auto").appendChild(btn); $("#generateCertBtn").onclick = ()=>{ const name = $("#certName").value.trim() || "Nombre del participante"; const courseTitle = c.title; const now = new Date().toLocaleDateString(); const win = window.open("","_blank","width=800,height=600"); win.document.write(`<html><head><title>Certificado</title><style>body{font-family:Arial;text-align:center;padding:40px} .cert{border:10px solid #003A6F;padding:30px;border-radius:8px} h1{color:#003A6F} .small{font-size:14px;color:#333}</style></head><body><div class="cert"><h1>Certificado de conclusión</h1><p class="small">Se certifica que</p><h2>${name}</h2><p class="small">ha completado el curso</p><h3>${courseTitle}</h3><p class="small">Fecha: ${now}</p></div></body></html>`); win.document.close(); bootstrap.Modal.getOrCreateInstance($("#certModal")).hide(); }; } }
 
-function markStepDone(step){
-  const set = getDoneSet();
-  if(!set.has(step)){
-    set.add(step);
-    saveDoneSet(set);
-    updateTopicProgressBar();
-  }
-}
-
-/** Marker questions **/
-function setupMarkerQuestions(video, markers){
-  if(!video) return;
-  state.markerPending = null;
-  const asked = new Set();
-
-  const modalEl = $("#markerModal");
-  const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
-  const questionEl = $("#markerQuestion");
-  const optionsEl = $("#markerOptions");
-  const feedbackEl = $("#markerFeedback");
-  const submitBtn = $("#markerSubmit");
-
-  video.ontimeupdate = ()=>{
-    const t = video.currentTime;
-    const next = markers.find((m, idx)=> t >= m.time && !asked.has(idx));
-    if(next){
-      const idx = markers.indexOf(next);
-      asked.add(idx);
-      state.markerPending = idx;
-      video.pause();
-      // populate modal
-      feedbackEl.innerHTML = "";
-      questionEl.textContent = next.question.text;
-      optionsEl.innerHTML = next.question.options.map((op,i)=>`
-        <div class="form-check">
-          <input class="form-check-input" type="radio" name="markerAnswer" id="markerAnswer${i}" value="${i}">
-          <label class="form-check-label" for="markerAnswer${i}">${op}</label>
-        </div>
-      `).join("");
-      modal.show();
-    }
-  };
-
-  submitBtn.onclick = ()=>{
-    const pendingIdx = state.markerPending;
-    if(pendingIdx==null) return;
-    const marker = markers[pendingIdx];
-    const sel = $('input[name="markerAnswer"]:checked');
-    if(!sel){
-      feedbackEl.innerHTML = `<span class="text-danger">Selecciona una opción.</span>`;
-      return;
-    }
-    const val = parseInt(sel.value);
-    if(val === marker.question.answer){
-      feedbackEl.innerHTML = `<span class="text-success">¡Correcto!</span>`;
-      modal.hide();
-      video.play();
-      markStepDone(`marker-${pendingIdx}`);
-    }else{
-      feedbackEl.innerHTML = `<span class="text-danger">Respuesta incorrecta. Intenta nuevamente.</span>`;
-    }
-  };
-
-  // Mark theory tab as done when visited
-  $("#theory-tab").addEventListener("shown.bs.tab", ()=> markStepDone("theory"));
-}
-
-// Kickoff
+// bootstrap kick
 loadCourses();

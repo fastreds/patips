@@ -14,39 +14,20 @@
           ],
           "answer": 1
         }
-      },
-      {
-        "time": 7,
-        "question": {
-          "text": "Marca la prioridad inicial correcta:",
-          "options": [
-            "Ventilación antes que vía aérea",
-            "Vía aérea antes que circulación",
-            "Exposición antes que ventilación"
-          ],
-          "answer": 1
-        }
       }
     ]
   },
   "theory": {
-    "html": "<p>La evaluación primaria sigue el esquema <strong>ABCDE</strong>:\n      <span data-def=\"A: Airway (vía aérea). Garantizar permeabilidad y control cervical si hay trauma.\">A</span>,\n      <span data-def=\"B: Breathing (respiración). Evaluar esfuerzo, simetría y saturación.\">B</span>,\n      <span data-def=\"C: Circulation (circulación). Control de hemorragias y perfusión.\">C</span>,\n      <span data-def=\"D: Disability (estado neurológico). Escala AVPU/Glasgow.\">D</span> y\n      <span data-def=\"E: Exposure (exposición). Búsqueda de lesiones y control térmico.\">E</span>.\n      Trate lo que amenaza la vida mientras lo identifica.</p>"
+    "html": "<p>La evaluación primaria sigue el esquema <strong>ABCDE</strong>... <span data-def='A: Airway (vía aérea).'>A</span></p>"
   },
   "images": {
     "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/Anterior_thoracic_wall.png/640px-Anterior_thoracic_wall.png",
-    "alt": "Tórax anterior",
     "areas": [
       {
         "shape": "rect",
         "coords": "160,120,280,200",
         "title": "Área torácica",
-        "description": "Región para auscultación y evaluación respiratoria."
-      },
-      {
-        "shape": "rect",
-        "coords": "300,260,380,340",
-        "title": "Abdomen superior",
-        "description": "Revisión de sensibilidad y sangrado oculto."
+        "description": "Región para auscultación."
       }
     ]
   },
@@ -65,27 +46,49 @@
         2,
         3
       ]
-    },
-    {
-      "text": "La exposición se evalúa antes que la circulación.",
-      "type": "single",
-      "options": [
-        "Verdadero",
-        "Falso"
-      ],
-      "answer": 1
     }
   ],
   "resources": [
     {
       "type": "pdf",
-      "title": "Guía ABCDE (resumen)",
+      "title": "Guía ABCDE",
       "url": "https://assets.publishing.service.gov.uk/media/5a757f4d40f0b6333c6c5b36/ABCDE_approach.pdf"
+    }
+  ],
+  "content": [
+    {
+      "type": "theory",
+      "html": "<p>La evaluación primaria sigue el esquema <strong>ABCDE</strong>... <span data-def='A: Airway (vía aérea).'>A</span></p>"
     },
     {
-      "type": "enlace",
-      "title": "Video de apoyo",
-      "url": "https://www.youtube.com/results?search_query=primary+survey+ABCDE"
+      "type": "video",
+      "src": "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
+      "markers": [
+        {
+          "time": 3,
+          "question": {
+            "text": "¿Qué evalúa la 'A' en el esquema ABCDE?",
+            "options": [
+              "Circulación",
+              "Vía aérea",
+              "Exposición"
+            ],
+            "answer": 1
+          }
+        }
+      ]
+    },
+    {
+      "type": "image",
+      "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/Anterior_thoracic_wall.png/640px-Anterior_thoracic_wall.png",
+      "areas": [
+        {
+          "shape": "rect",
+          "coords": "160,120,280,200",
+          "title": "Área torácica",
+          "description": "Región para auscultación."
+        }
+      ]
     }
   ]
 }

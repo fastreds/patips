@@ -2,8 +2,16 @@
   "courses": [
     {
       "id": "primeros-auxilios",
-      "title": "Primeros Auxilios",
+      "title": "Primeros Auxilios Básicos",
+      "description": "Aprende técnicas esenciales para responder en emergencias y salvar vidas",
+      "thumbnail": "https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=300&h=200&fit=crop",
       "topics": [
+        {
+          "id": "bienvenida-introduccion",
+          "title": "Bienvenida e Introducción",
+          "icon": "bi bi-house-door",
+          "source": "data/topic-bienvenida-introduccion.json"
+        },
         {
           "id": "evaluacion-primaria",
           "title": "Evaluación primaria (ABCDE)",
@@ -11,41 +19,13 @@
           "source": "data/topic-evaluacion-primaria.json"
         },
         {
-          "id": "hemorragias",
-          "title": "Control de hemorragias",
-          "icon": "bi bi-droplet",
-          "source": "data/topic-hemorragias.json"
-        }
-      ]
-    },    {
-      "id": "primeros-auxilios2",
-      "title": "Primeros Auxilios",
-      "topics": [
-        {
-          "id": "evaluacion-primaria",
-          "title": "Evaluación primaria (ABCDE)",
-          "icon": "bi bi-activity",
-          "source": "data/topic-evaluacion-primaria.json"
-        },
-        {
-          "id": "hemorragias",
-          "title": "Control de hemorragias",
-          "icon": "bi bi-droplet",
-          "source": "data/topic-hemorragias.json"
-        },
-        {
-          "id": "fracturas",
-          "title": "Fracturas y esguinces",
-          "icon": "bi bi-bandaid",
-          "source": "data/topic-fracturas.json"
-        },
-        {
-          "id": "quemaduras",
-          "title": "Quemaduras",
-          "icon": "bi bi-fire",
-          "source": "data/topic-quemaduras.json"
+          "id": "rcp-basica",
+          "title": "RCP Básica y DEA",
+          "icon": "bi bi-heart-pulse",
+          "source": "data/topic-rcp-basica.json"
         }
       ]
     }
-  ]
+  ],
+  "content": []
 }

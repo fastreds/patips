@@ -1,0 +1,134 @@
+{
+  "title": "Bienvenida e Introducción al Curso",
+  "description": "Presentación del curso, objetivos de aprendizaje y generalidades sobre primeros auxilios",
+  "video": {
+    "src": "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
+    "markers": [
+      {
+        "time": 3,
+        "question": {
+          "text": "¿Cuál es el objetivo principal de los primeros auxilios?",
+          "options": [
+            "Curar completamente a la persona",
+            "Reemplazar la atención médica profesional",
+            "Preservar la vida, prevenir empeoramiento y promover recuperación",
+            "Realizar diagnósticos médicos"
+          ],
+          "answer": 2
+        }
+      },
+      {
+        "time": 8,
+        "question": {
+          "text": "¿Qué debe hacer primero al llegar a una escena de emergencia?",
+          "options": [
+            "Comenzar inmediatamente a atender a la víctima",
+            "Evaluar la escena para asegurar que es segura",
+            "Llamar a los familiares de la víctima",
+            "Trasladar a la víctima a un lugar más cómodo"
+          ],
+          "answer": 1
+        }
+      }
+    ]
+  },
+  "theory": {
+    "html": "<h4>Bienvenida al Curso de Primeros Auxilios</h4><p>Este curso está diseñado para proporcionarle los conocimientos y habilidades esenciales para responder efectivamente en situaciones de emergencia. Al finalizar, usted será capaz de:</p><ul><li>Identificar y evaluar situaciones de emergencia</li><li>Aplicar técnicas básicas de primeros auxilios</li><li>Utilizar adecuadamente el <span data-def='Protocolo ABCDE: Abordaje sistemático para evaluación de pacientes en emergencia (Vía Aérea, Respiración, Circulación, Discapacidad, Exposición)'>protocolo ABCDE</span></li><li>Realizar RCP básico y usar DEA</li><li>Manejar hemorragias, fracturas y quemaduras</li></ul><h5>Principios Fundamentales</h5><p>Los primeros auxilios se basan en tres principios esenciales:</p><ol><li><span data-def='Preservar la vida: Acciones dirigidas a mantener las funciones vitales y prevenir la muerte.'>Preservar la vida</span></li><li><span data-def='Prevenir el empeoramiento: Evitar que la condición de la víctima se deteriore further.'>Prevenir el empeoramiento</span></li><li><span data-def='Promover la recuperación: Ayudar a la víctima a recuperarse mediante técnicas adecuadas de primeros auxilios.'>Promover la recuperación</span></li></ol>"
+  },
+  "images": {
+    "src": "https://images.unsplash.com/photo-1584697964358-3e14ca57658b?w=640&h=360&fit=crop",
+    "alt": "Kit de primeros auxilios básico",
+    "areas": [
+      {
+        "shape": "rect",
+        "coords": "120,80,220,160",
+        "title": "Guantes de protección",
+        "description": "Elemento esencial de protección personal. Siempre use guantes al atender a una víctima."
+      },
+      {
+        "shape": "circle",
+        "coords": "300,120,40",
+        "title": "Vendas y apósitos",
+        "description": "Material para control de hemorragias y cubrir heridas. Deben estar esterilizados."
+      },
+      {
+        "shape": "rect",
+        "coords": "400,60,500,180",
+        "title": "Manual de referencia",
+        "description": "Guía rápida de primeros auxilios. Familiarícese con su contenido."
+      }
+    ]
+  },
+  "qa": [
+    {
+      "text": "Seleccione los elementos que debe contener un botiquín básico:",
+      "type": "multi",
+      "options": [
+        "Guantes de protección",
+        "Vendas estériles",
+        "Medicamentos recetados",
+        "Tijeras de punta roma",
+        "Antiséptico"
+      ],
+      "answer": [0, 1, 3, 4]
+    },
+    {
+      "text": "Verdadero o Falso: Los primeros auxilios reemplazan la atención médica profesional.",
+      "type": "single",
+      "options": [
+        "Verdadero",
+        "Falso"
+      ],
+      "answer": 1
+    }
+  ],
+  "resources": [
+    {
+      "type": "pdf",
+      "title": "Guía de Primeros Auxilios - Cruz Roja",
+      "url": "https://www.redcross.org/first-aid"
+    },
+    {
+      "type": "enlace",
+      "title": "Video: Introducción a los Primeros Auxilios",
+      "url": "https://www.youtube.com/watch?v=SRgRjL2sXmo"
+    }
+  ],
+  "content": [
+    {
+      "type": "theory",
+      "html": "<h4>Bienvenida al Curso de Primeros Auxilios</h4><p>Este curso está diseñado para proporcionarle los conocimientos y habilidades esenciales para responder efectivamente en situaciones de emergencia.</p>"
+    },
+    {
+      "type": "video",
+      "src": "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
+      "markers": [
+        {
+          "time": 3,
+          "question": {
+            "text": "¿Cuál es el objetivo principal de los primeros auxilios?",
+            "options": [
+              "Curar completamente a la persona",
+              "Reemplazar la atención médica profesional",
+              "Preservar la vida, prevenir empeoramiento y promover recuperación",
+              "Realizar diagnósticos médicos"
+            ],
+            "answer": 2
+          }
+        }
+      ]
+    },
+    {
+      "type": "image",
+      "src": "https://images.unsplash.com/photo-1584697964358-3e14ca57658b?w=640&h=360&fit=crop",
+      "areas": [
+        {
+          "shape": "rect",
+          "coords": "120,80,220,160",
+          "title": "Guantes de protección",
+          "description": "Elemento esencial de protección personal. Siempre use guantes al atender a una víctima."
+        }
+      ]
+    }
+  ]
+}

@@ -6,11 +6,10 @@
   <title>SPA Cursos | Estilo UCR</title>
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="css/styles.css">
 </head>
 <body class="bg-light">
-  <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-dark ucr-navbar fixed-top shadow-sm">
     <div class="container-fluid">
       <button class="btn btn-outline-light me-2" id="sidebarToggle" aria-label="Abrir menú">
@@ -20,21 +19,24 @@
       <div class="ms-auto d-flex align-items-center gap-3">
         <div id="globalProgress" class="text-white small"></div>
         <button class="btn btn-outline-light btn-sm" id="resetProgressBtn" title="Borrar avance">Reiniciar</button>
+        <button class="btn btn-outline-light btn-sm" id="creditsBtn" title="Créditos y contacto">Créditos</button>
       </div>
     </div>
   </nav>
 
   <div class="container-fluid">
     <div class="row flex-nowrap">
-      <!-- Sidebar -->
       <aside id="sidebar" class="col-12 col-md-4 col-lg-3 col-xxl-2 ucr-sidebar collapse show">
-        <div class="p-3">
+        <div class="p-3 d-flex flex-column" style="height:100%">
           <h6 class="text-uppercase text-secondary">Contenido</h6>
-          <div id="courseTree" class="list-group list-group-flush small"></div>
+          <div id="courseTree" class="list-group list-group-flush small flex-grow-1 overflow-auto"></div>
+          <div class="mt-3 small text-muted">
+            <div>Contacto: obs@ucr.ac.cr</div>
+            <div>Autor: Oficina de Bienestar y Salud - UCR</div>
+          </div>
         </div>
       </aside>
 
-      <!-- Main -->
       <main class="col p-3 p-md-4 pt-5 mt-4">
         <div class="container-xxl">
           <div id="topicHeader" class="d-flex justify-content-between align-items-center mb-3">
@@ -46,61 +48,37 @@
             </div>
           </div>
 
-          <!-- Tabs -->
           <ul class="nav nav-tabs" id="contentTabs" role="tablist">
             <li class="nav-item" role="presentation">
-              <button class="nav-link active" id="video-tab" data-bs-toggle="tab" data-bs-target="#video" type="button" role="tab">Video</button>
+              <button class="nav-link active" id="tema-tab" data-bs-toggle="tab" data-bs-target="#tema" type="button" role="tab">Tema</button>
             </li>
             <li class="nav-item" role="presentation">
-              <button class="nav-link" id="theory-tab" data-bs-toggle="tab" data-bs-target="#theory" type="button" role="tab">Teoría</button>
+              <button class="nav-link" id="preguntas-tab" data-bs-toggle="tab" data-bs-target="#preguntas" type="button" role="tab">Preguntas</button>
             </li>
             <li class="nav-item" role="presentation">
-              <button class="nav-link" id="images-tab" data-bs-toggle="tab" data-bs-target="#images" type="button" role="tab">Imágenes</button>
-            </li>
-            <li class="nav-item" role="presentation">
-              <button class="nav-link" id="qa-tab" data-bs-toggle="tab" data-bs-target="#qa" type="button" role="tab">Preguntas</button>
-            </li>
-            <li class="nav-item" role="presentation">
-              <button class="nav-link" id="resources-tab" data-bs-toggle="tab" data-bs-target="#resources" type="button" role="tab">Recursos</button>
+              <button class="nav-link" id="recursos-tab" data-bs-toggle="tab" data-bs-target="#recursos" type="button" role="tab">Recursos</button>
             </li>
           </ul>
 
           <div class="tab-content border border-top-0 rounded-bottom bg-white p-3 p-md-4" id="tabContent">
-            <!-- Video -->
-            <div class="tab-pane fade show active" id="video" role="tabpanel" aria-labelledby="video-tab">
-              <div class="ratio ratio-16x9 rounded overflow-hidden ucr-shadow">
-                <video id="videoPlayer" class="w-100 h-100" controls preload="metadata">
-                  <source id="videoSource" src="" type="video/mp4">
-                  Tu navegador no soporta video HTML5.
-                </video>
+            <div class="tab-pane fade show active" id="tema" role="tabpanel" aria-labelledby="tema-tab">
+              <div id="temaContent" class="vstack gap-4"></div>
+              <div class="d-flex justify-content-end mt-3">
+                <button id="nextTopicBtn" class="btn ucr-btn">Avanzar al siguiente tema</button>
               </div>
-              <div id="videoMarkers" class="mt-3"></div>
             </div>
 
-            <!-- Teoría -->
-            <div class="tab-pane fade" id="theory" role="tabpanel" aria-labelledby="theory-tab">
-              <article id="theoryContent" class="lh-lg"></article>
-            </div>
-
-            <!-- Imágenes con zonas interactivas -->
-            <div class="tab-pane fade" id="images" role="tabpanel" aria-labelledby="images-tab">
-              <div id="imageContainer" class="text-center">
-                <!-- Imagen y mapa se inyectan dinámicamente -->
-              </div>
-              <p class="text-muted small mt-2">Pase el cursor o toque las áreas resaltadas para ver detalles.</p>
-            </div>
-
-            <!-- Q&A -->
-            <div class="tab-pane fade" id="qa" role="tabpanel" aria-labelledby="qa-tab">
-              <form id="qaForm" class="vstack gap-3"></form>
+            <div class="tab-pane fade" id="preguntas" role="tabpanel" aria-labelledby="preguntas-tab">
+              <form id="preguntasForm" class="vstack gap-3"></form>
               <div class="d-flex gap-2 mt-2">
-                <button id="validateQA" class="btn ucr-btn">Validar</button>
-                <div id="qaResult" class="align-self-center"></div>
+                <button id="savePreguntasBtn" class="btn ucr-btn">Guardar respuestas</button>
+                <button id="showSummaryBtn" class="btn btn-outline-secondary">Resumen</button>
+                <div id="preguntasResult" class="align-self-center"></div>
               </div>
+              <div class="mt-3" id="videoSummaryContainer"></div>
             </div>
 
-            <!-- Recursos -->
-            <div class="tab-pane fade" id="resources" role="tabpanel" aria-labelledby="resources-tab">
+            <div class="tab-pane fade" id="recursos" role="tabpanel" aria-labelledby="recursos-tab">
               <ul id="resourcesList" class="list-group list-group-flush"></ul>
             </div>
           </div>
@@ -109,7 +87,6 @@
     </div>
   </div>
 
-  <!-- Modal de pregunta en marcador -->
   <div class="modal fade" id="markerModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -130,11 +107,39 @@
     </div>
   </div>
 
-  <!-- Dependencies -->
+  <div class="modal fade" id="creditsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header"><h5 class="modal-title">Créditos y Contacto</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body">
+          <p>Desarrollado para la Oficina de Bienestar y Salud - UCR.</p>
+          <p>Contact: obs@ucr.ac.cr</p>
+          <p>Diseño y desarrollo: Equipo OBS</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="certModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header"><h5 class="modal-title">Generar certificado</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body">
+          <label for="certName" class="form-label">Nombre completo</label>
+          <input id="certName" class="form-control" placeholder="Tu nombre">
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button class="btn ucr-btn" id="generateCertBtn">Generar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <!-- maphilight (jQuery plugin) -->
   <script src="https://cdn.jsdelivr.net/gh/kemayo/maphilight/jquery.maphilight.min.js"></script>
   <script src="js/app.js"></script>
 </body>
